@@ -1,0 +1,247 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Blogify API",
+    "version": "1.0.0",
+    "description": "API pour gérer les utilisateurs, les articles de blog, les commentaires et les likes dans Blogify."
+  },
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Créer un nouvel utilisateur",
+        "description": "Permet aux utilisateurs de s'inscrire en fournissant un email, un nom d'utilisateur et un mot de passe.",
+        "operationId": "registerUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Utilisateur créé avec succès"
+          },
+          "400": {
+            "description": "Échec de la création de l'utilisateur"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Connexion d'un utilisateur",
+        "description": "Permet aux utilisateurs de se connecter avec leur email et mot de passe.",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Connexion réussie, token JWT retourné"
+            },
+            "401": {
+              "description": "Échec de la connexion, informations d'identification invalides"
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "post": {
+        "tags": ["Posts"],
+        "summary": "Créer un nouvel article",
+        "description": "Permet aux utilisateurs de créer un article de blog.",
+        "operationId": "createPost",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["title", "content"]
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Article créé avec succès"
+            },
+            "400": {
+              "description": "Échec de la création de l'article"
+            }
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "tags": ["Posts"],
+        "summary": "Récupérer un article par ID",
+        "description": "Récupère un article de blog en fonction de son ID.",
+        "operationId": "getPostById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de l'article",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article récupéré avec succès"
+          },
+          "404": {
+            "description": "Article non trouvé"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Posts"],
+        "summary": "Mettre à jour un article",
+        "description": "Permet aux utilisateurs de mettre à jour un article de blog par ID.",
+        "operationId": "updatePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID de l'article",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Article mis à jour avec succès"
+            },
+            "404": {
+              "description": "Article non trouvé"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Posts"],
+        "summary": "Supprimer un article",
+        "description": "Supprime un article de blog par son ID. Seul l'auteur du post peut le supprimer.",
+        "operationId": "deletePost",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID du post à supprimer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Post supprimé avec succès"
+          },
+          "403": {
+            "description": "Non autorisé à supprimer ce post"
+          },
+          "404": {
+            "description": "Post non trouvé"
+          },
+          "400": {
+            "description": "Échec de la suppression du post"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
