@@ -29,7 +29,6 @@
 
    ```bash
       npm install
-      cd blog-api
 3. Create a `.env` file in the root directory with the following content:
 
    ```bash
